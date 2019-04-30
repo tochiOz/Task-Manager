@@ -1,0 +1,17 @@
+{
+  "name": "task-manager",
+  "version": "1.0.0",
+  "description": "A Task Manager",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "task"
+  ],
+  "author": "Tueloper",
+  "license": "ISC",
+  "dependencies": {
+    "mongodb": "^3.2.3"
+  }
+}
