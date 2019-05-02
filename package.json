@@ -4,7 +4,12 @@
   "description": "A Task Manager",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tueloper/Task-Manager.git"
   },
   "keywords": [
     "task"
@@ -12,6 +17,13 @@
   "author": "Tueloper",
   "license": "ISC",
   "dependencies": {
-    "mongodb": "^3.2.3"
+    "chalk": "^2.4.2",
+    "express": "^4.16.4",
+    "mongodb": "^3.2.3",
+    "mongoose": "^5.5.0",
+    "validator": "^10.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.0"
   }
 }
