@@ -60,7 +60,7 @@ router.patch('/task/update/:id', async ( req, res ) => {
 
     //setting up validation for the keys to be updated
     const updates = Object.keys(req.body);
-        const allowableTask = [ 'description', 'completed' ];
+    const allowableTask = [ 'description', 'completed' ];
     const isValidTask = updates.every((update) => allowableTask.includes(update));
 
     //Prompt invalid task inputs
@@ -72,9 +72,12 @@ router.patch('/task/update/:id', async ( req, res ) => {
 
     //Send valid data for update
     try {
-        const updateTask = await Task.findByIdAndUpdate( _id, req.body, {
-            new: true, runValidators: true
-        });
+
+        const updateTask = await Task.findById( _id )
+
+        updates.forEach((update) => updateTask[update] = req.body[update])
+
+        await updateTask.save()
 
         if ( !updateTask ) {
             return res.status(404).send('Task not Found')

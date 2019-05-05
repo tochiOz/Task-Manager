@@ -13,9 +13,31 @@ router.post('/user/create', async (req, res) => {
 
     try {
         await user.save();
-        res.status(201).send({user})
+
+        //generating a new token for the saved user
+        const token = await user.generateAuthToken()
+        res.status(201).send({ user, token })
     } catch (err) {
         res.status(400).send(err.message)
+    }
+});
+
+
+//This is used to read all Tasks
+router.post('/user/login', async (req, res) => {
+    
+    try {
+        const user = await User.findByCredentials( req.body.email, req.body.password )
+        //token handler
+        const token = await user.generateAuthToken()
+
+        res.status(200).send({
+            Message: 'User Gotten successfully',
+            user,
+            token
+        })
+    } catch( e ) {
+        res.status(500).send(e)
     }
 });
 
@@ -24,6 +46,7 @@ router.get('/users', async (req, res) => {
 
     try {
         const users = await User.find({});
+        
         res.status(200).send({
             Message: 'Users Gotten successfully',
             users
@@ -47,9 +70,18 @@ router.patch('/user/update/:id', async (req, res) => {
     const _id = req.params.id;
 
     try {
-        const updatedUser = await User.findByIdAndUpdate( _id, req.body, {
-            new: true, runValidators: true
-        });
+        //locating the object to be changed first.
+        const updatedUser = await User.findById( _id )
+        // return console.log(updatedUser)
+        //updating the update for each user update
+        updates.forEach((update) => updatedUser[update] = req.body[update])
+
+        //Save the update
+        await updatedUser.save()
+
+        // const updatedUser = await User.findByIdAndUpdate( _id, req.body, {
+        //     new: true, runValidators: true
+        // });
 
         if( !updatedUser ) {
             return res.status(404).send( 'Error: User Not Found')
