@@ -86,18 +86,18 @@ userSchema.statics.findByCredentials = async ( email, password ) => {
 // }
 
 //generating login token to be stored
-userSchema.methods.generateAuthToken = async function () {
+// userSchema.methods.generateAuthToken = async function () {
 
-    //create a container used to access the user
-    const user = this
+//     //create a container used to access the user
+//     const user = this
 
-    const token = jwt.sign({ _id: user._id.toString() }, 'OliverTwesst', { expiresIn: '1 week'})
-    //save the generated token by concatenation
-    user.tokens = user.tokens.concat({ token })
-    await user.save()
+//     const token = jwt.sign({ _id: user._id.toString() }, 'OliverTwesst', { expiresIn: '1 week'})
+//     //save the generated token by concatenation
+//     user.tokens = user.tokens.concat({ token })
+//     await user.save()
 
-    return token;
-}
+//     return token;
+// }
 userSchema.methods.generateAuthToken = async function () {
 
     //create a container used to access the user
