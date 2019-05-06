@@ -1,6 +1,7 @@
 const express = require('express');
 const Task = require('../models/task');
 const router = new express.Router();
+const auth = require('../middleware/auth')
 
 //simple testing router
 router.post('/task', async ( req, res ) => {
@@ -9,12 +10,15 @@ router.post('/task', async ( req, res ) => {
 
 
 //This is used to read all Tasks
-router.get('/tasks', async (req, res) => {
+router.get('/users/tasks', auth, async (req, res) => {
 
     try {
-        const tasks = await Task.find({});
-        res.status(200).send({
+        const tasks = await Task.find({ owner: userProfile._id });
+        // await userProfile.populate('tasks').execPopulate()
+
+        res.send({
             Message: 'Tasks Gotten successfully',
+            // userProfile.tasks
             tasks
         })
     } catch (e) {
@@ -24,24 +28,30 @@ router.get('/tasks', async (req, res) => {
 
 
 //this is used to create task
-router.post('/task/create', async (req, res) => {
+router.post('/task/create', auth, async (req, res) => {
 
-    const task = new Task(req.body);
+    //adding the owner id to help know who created the id
+    const task = new Task({
+        ...req.body,
+        owner: userProfile._id
+    });
 
     try {
         const taskNew = await task.save();
-        res.status(201).send({task})
+        res.status(201).send({taskNew})
     } catch(err) {
         res.status(400).send(err)
     }
 });
 
 //This is used to read Task by id
-router.get('/tasks/:id', async (req, res) => {
+router.get('/tasks/:id', auth, async (req, res) => {
 
     try {
         const _id = req.params.id;
-        const taskId = await Task.findById(_id);
+        // const taskId = await Task.findById(_id);
+
+        const taskId = await Task.findOne({ _id, owner: userProfile._id })
 
         if( !taskId ) {
             return res.status(404).send( 'Error: Message Not Found')
@@ -56,7 +66,7 @@ router.get('/tasks/:id', async (req, res) => {
 });
 
 //updating task items
-router.patch('/task/update/:id', async ( req, res ) => {
+router.patch('/task/update/:id', auth, async ( req, res ) => {
 
     //setting up validation for the keys to be updated
     const updates = Object.keys(req.body);
@@ -72,16 +82,14 @@ router.patch('/task/update/:id', async ( req, res ) => {
 
     //Send valid data for update
     try {
-
-        const updateTask = await Task.findById( _id )
-
-        updates.forEach((update) => updateTask[update] = req.body[update])
-
-        await updateTask.save()
-
         if ( !updateTask ) {
             return res.status(404).send('Task not Found')
         }
+
+        const updateTask = await Task.findOne({ _id, owner: userProfile._id })
+        updates.forEach((update) => updateTask[update] = req.body[update])
+
+        await updateTask.save()
 
         return res.status(200).send({
             Message: 'Update Successful',
@@ -93,12 +101,12 @@ router.patch('/task/update/:id', async ( req, res ) => {
 });
 
 //deleting a single task
-router.delete('/task/delete/:id', async ( req, res ) => {
+router.delete('/task/delete/:id', auth, async ( req, res ) => {
 
     const _id = req.params.id;
 
     try {
-        const deletedTask = await Task.findByIdAndDelete( _id );
+        const deletedTask = await Task.findByIdAndDelete({ _id, owner: userProfile._id });
 
         if (! deletedTask ) {
             return res.status(404).send()

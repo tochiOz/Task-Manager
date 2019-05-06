@@ -1,6 +1,7 @@
 const express = require('express');
 const User = require('../models/user');
 const router = new express.Router();
+const auth = require('../middleware/auth')
 
 //simple testing router
 router.post('/user', async ( req, res ) => {
@@ -23,7 +24,7 @@ router.post('/user/create', async (req, res) => {
 });
 
 
-//This is used to read all Tasks
+//This is used Log-In 
 router.post('/user/login', async (req, res) => {
     
     try {
@@ -41,7 +42,7 @@ router.post('/user/login', async (req, res) => {
     }
 });
 
-//This is used to read all Tasks
+//This is used to read all Users
 router.get('/users', async (req, res) => {
 
     try {
@@ -56,8 +57,43 @@ router.get('/users', async (req, res) => {
     }
 });
 
+//This is used to log-Out a single user
+router.post('/users/logoutAll', auth, async (req, res) => {
+    try {
+        //filtering away the used/active token
+        userProfile.tokens = []
+        // return console.log(tokens)
+        await userProfile.save( )
+        res.send()
+        console.log('User Logged Out ALL')
+    } catch (e) {
+        res.status(500).send(e)
+    }
+});
+
+//This is used to log-Out from all sessions 
+router.post('/user/logout', auth, async (req, res) => {
+    try {
+        //filtering away the used/active token
+        userProfile.tokens = userProfile.tokens.filter((token) => {
+            return token.token !== userToken
+        })
+
+        await userProfile.save( )
+        res.send()
+        console.log('User Logged Out')
+    } catch (e) {
+        res.status(500).send(e  )
+    }
+});
+
+//This is used to log-In a single user
+router.get('/user/me', auth, (req, res) => {
+    res.send(userProfile)
+});
+
 //This is used to read Task by  id and update the data with new information
-router.patch('/user/update/:id', async (req, res) => {
+router.patch('/user/update/me', auth, async (req, res) => {
     //We have to create an allowable set of data that can be allowed by mongo db
     const updates = Object.keys(req.body);
     const allowedUpdates = [ 'name', 'email', 'password' ];
@@ -67,28 +103,17 @@ router.patch('/user/update/:id', async (req, res) => {
         return res.status(404).send({ Error: 'Invalid key Update'})
     }
 
-    const _id = req.params.id;
-
     try {
-        //locating the object to be changed first.
-        const updatedUser = await User.findById( _id )
         // return console.log(updatedUser)
         //updating the update for each user update
-        updates.forEach((update) => updatedUser[update] = req.body[update])
+        updates.forEach((update) => userProfile[update] = req.body[update])
 
         //Save the update
-        await updatedUser.save()
+        await userProfile.save()
 
-        // const updatedUser = await User.findByIdAndUpdate( _id, req.body, {
-        //     new: true, runValidators: true
-        // });
-
-        if( !updatedUser ) {
-            return res.status(404).send( 'Error: User Not Found')
-        }
         res.status(200).send({
             Update: 'The Email is updated',
-            updatedUser
+            userProfile
         })
     } catch(e) {
         res.status(500).send(e)
@@ -96,22 +121,14 @@ router.patch('/user/update/:id', async (req, res) => {
 });
 
 //Deleting a single user
-router.delete('/user/delete/:id', async ( req, res ) => {
-
-    const _id = req.params.id;
+router.delete('/user/me', auth, async ( req, res ) => {
 
     try {
-        const deletedUser = await User.findByIdAndDelete( _id );
-
-        if (! deletedUser ) {
-            return res.status(404).send()
-        }
-
-        res.send(deletedUser)
+        await userProfile.remove()
+        res.send(userProfile)
     } catch (e) {
-        res.status(500).send(e)
+        res.status(401).send(e)
     }
-
 });
 
 module.exports = router;
