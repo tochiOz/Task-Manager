@@ -9,20 +9,30 @@ router.post('/task', async ( req, res ) => {
 });
 
 
-//This is used to read all Tasks
-router.get('/users/tasks', auth, async (req, res) => {
+//This is used to read all Tasks for a particular user
+//GET /tasks?completed=true
+router.get('/tasks', auth, async (req, res) => {
+    const match = {}
+
+    if ( req.query.completed ) {
+        match.completed = req.query.completed === 'true'
+    }
 
     try {
-        const tasks = await Task.find({ owner: userProfile._id });
-        // await userProfile.populate('tasks').execPopulate()
+        // const tasks = await Task.find({ owner: userProfile._id })
+        await userProfile.populate({
+            path: 'tasks',
+            match,
+            options: {
+                //this is used for pagination of data pages
+                limit: parseInt( req.query.limit ),
+                skip: parseInt( req.query.skip )
+            }
+        }).execPopulate()
 
-        res.send({
-            Message: 'Tasks Gotten successfully',
-            // userProfile.tasks
-            tasks
-        })
+        res.send(userProfile.tasks)
     } catch (e) {
-        res.status(500).send(e)
+        res.status(400).send(e)
     }
 });
 
@@ -51,14 +61,15 @@ router.get('/tasks/:id', auth, async (req, res) => {
         const _id = req.params.id;
         // const taskId = await Task.findById(_id);
 
-        const taskId = await Task.findOne({ _id, owner: userProfile._id })
+        const task = await Task.findOne({ _id, owner: userProfile._id })
 
-        if( !taskId ) {
+        if( !task ) {
             return res.status(404).send( 'Error: Message Not Found')
         }
+
         res.status(200).send({
             Message: 'The Task is Gotten successfully',
-            taskId
+            task
         })
     } catch(e) {
         res.status(500).send(e)
@@ -82,18 +93,18 @@ router.patch('/task/update/:id', auth, async ( req, res ) => {
 
     //Send valid data for update
     try {
-        if ( !updateTask ) {
+        const updatedTask = await Task.findOne({ _id, owner: userProfile._id })
+        if ( !updatedTask ) {
             return res.status(404).send('Task not Found')
         }
 
-        const updateTask = await Task.findOne({ _id, owner: userProfile._id })
-        updates.forEach((update) => updateTask[update] = req.body[update])
+        updates.forEach((update) => updatedTask[update] = req.body[update])
 
-        await updateTask.save()
+        await updatedTask.save()
 
         return res.status(200).send({
             Message: 'Update Successful',
-            updateTask
+            updatedTask
         })
     }catch (e) {
         console.log(e)

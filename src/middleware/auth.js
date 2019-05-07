@@ -17,6 +17,7 @@ const auth = async (req, res, next) => {
 
        userToken = token
        userProfile = user
+
         next()
     } catch (error) {
         res.status(401).send({ Error: 'Please Make sure you are correctly logged In'})

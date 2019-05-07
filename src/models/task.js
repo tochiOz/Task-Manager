@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const User = require('./user')
 
 mongoose.connect('mongodb://127.0.0.1:27017/task-manager-db', {
     useNewUrlParser: true,
@@ -23,8 +24,10 @@ const taskSchema = mongoose.Schema({
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'User'
+        ref: 'users'
     }
+}, {
+    timestamps: true
 });
 
 const Task = mongoose.model( 'tasks', taskSchema )
