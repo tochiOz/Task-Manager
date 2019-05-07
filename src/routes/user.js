@@ -23,7 +23,6 @@ router.post('/user/create', async (req, res) => {
     }
 });
 
-
 //This is used Log-In 
 router.post('/user/login', async (req, res) => {
     

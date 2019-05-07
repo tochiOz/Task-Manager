@@ -49,11 +49,13 @@ const userSchema = mongoose.Schema({
             required: true
         }
     }]
+}, {
+    timestamps: true
 })
 
 //using virtual to create a relationship between user and owned directories
 userSchema.virtual('tasks', {
-    ref: 'Task',
+    ref: 'tasks',
     localField: '_id',
     foreignField: 'owner'
 })
