@@ -13,9 +13,16 @@ router.post('/task', async ( req, res ) => {
 //GET /tasks?completed=true
 router.get('/tasks', auth, async (req, res) => {
     const match = {}
+    const sort = {}
 
     if ( req.query.completed ) {
         match.completed = req.query.completed === 'true'
+    }
+
+    if ( req.query.sortBy ) {
+        //accessing the string query to make your sorting process
+        const pathSort = req.query.sortBy.split(':')
+        sort[pathSort[0]] = pathSort[1] === 'desc' ? -1 : 1
     }
 
     try {
@@ -26,7 +33,9 @@ router.get('/tasks', auth, async (req, res) => {
             options: {
                 //this is used for pagination of data pages
                 limit: parseInt( req.query.limit ),
-                skip: parseInt( req.query.skip )
+                skip: parseInt( req.query.skip ),
+                //this new function helps to sort
+                sort
             }
         }).execPopulate()
 
