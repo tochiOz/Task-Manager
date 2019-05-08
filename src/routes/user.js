@@ -1,7 +1,8 @@
 const express = require('express');
 const User = require('../models/user');
 const router = new express.Router();
-const auth = require('../middleware/auth')
+const auth = require('../middleware/auth');
+const multer = require('multer')
 
 //simple testing router
 router.post('/user', async ( req, res ) => {
@@ -129,5 +130,33 @@ router.delete('/user/me', auth, async ( req, res ) => {
         res.status(401).send(e)
     }
 });
+
+//uploading a file route
+const upload = multer({
+    //the dest creates a directory where the file is to be stored
+    dest: 'avatars',
+    //use limits to create limits for file
+    limits: {
+        //for filesize
+        fileSize: 1000000
+    },
+    //fileFilter helps to filter unaccpted file
+    fileFilter(req, file, cb) {
+        //to check for pdf
+            // if ( !file.originalname.endsWith('.doc ') ) {
+            //     return cb(new Error('Please upload a Pdf'))   
+            // }
+
+            //for doc/docx - expression is \.(doc|docx)$
+            if ( !file.originalname.match(/\.(jpg|jpeg|png|svg|PNG)$/) ) {
+                return cb(new Error('Please upload a Picture Format document'))   
+            }
+
+            cb( undefined, true )
+    }
+})
+router.post('/users/me/avatar', upload.single('avatar'), (req, res) => {
+    res.send()
+})
 
 module.exports = router;
