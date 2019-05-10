@@ -3,7 +3,8 @@ const validator = require('validator')
 
 mongoose.connect('mongodb://127.0.0.1:27017/task-manager-db', {
     useNewUrlParser: true,
-    useCreateIndex: true
+    useCreateIndex: true,
+    useFindAndModify: false
 })
 
 
@@ -27,39 +28,39 @@ mongoose.connect('mongodb://127.0.0.1:27017/task-manager-db', {
 //     }
 // })
 
-const User = mongoose.model('task', {
-    email: {
-        type: String,
-        required: true,
-        trim: true,
-        lowercase: true,
-        validate(value) {
-            if(!validator.isEmail(value)) {
-                throw new Error('Email is invalid')
-            }
-        }
-    },
+// const User = mongoose.model('task', {
+//     email: {
+//         type: String,
+//         required: true,
+//         trim: true,
+//         lowercase: true,
+//         validate(value) {
+//             if(!validator.isEmail(value)) {
+//                 throw new Error('Email is invalid')
+//             }
+//         }
+//     },
 
-    password: {
-        type: String,
-        default: 1234567890,
-        minLength: 4,
-        lowercase: true,
-        validate(value) {
-            if (value === 'password') {
-                throw new Error('Please check your password and try again')
-            }
-        }
-    }
-})
+//     password: {
+//         type: String,
+//         default: 1234567890,
+//         minLength: 4,
+//         lowercase: true,
+//         validate(value) {
+//             if (value === 'password') {
+//                 throw new Error('Please check your password and try again')
+//             }
+//         }
+//     }
+// })
 
-const nameQuery = new User({
-    email: ' EFHJ@NOIN.VM  ',
-    password: 'hoiuupiolknkYUVILHIl'
-})
+// const nameQuery = new User({
+//     email: ' EFHJ@NOIN.VM  ',
+//     password: 'hoiuupiolknkYUVILHIl'
+// })
 
-nameQuery.save().then(() => {
-    console.log(nameQuery)
-}).catch((err) => {
-    console.log(err)
-})
+// nameQuery.save().then(() => {
+//     console.log(nameQuery)
+// }).catch((err) => {
+//     console.log(err)
+// })
