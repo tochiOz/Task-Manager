@@ -48,7 +48,12 @@ const userSchema = mongoose.Schema({
             type: String,
             required: true
         }
-    }]
+    }],
+    //help to store the binary image data
+
+    avatar: {
+        type: Buffer
+    }
 }, {
     timestamps: true
 })
@@ -106,6 +111,7 @@ userSchema.methods.toJSON = function () {
     //Hide data displayed
     delete userObject.password
     delete userObject.tokens
+    delete userObject.avatar
 
     return userObject
 }
