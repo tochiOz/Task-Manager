@@ -3,7 +3,8 @@ const User = require('./user')
 
 mongoose.connect('mongodb://127.0.0.1:27017/task-manager-db', {
     useNewUrlParser: true,
-    useCreateIndex: true
+    useCreateIndex: true,
+    useFindAndModify: false
 });
 
 const taskSchema = mongoose.Schema({
