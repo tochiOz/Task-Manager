@@ -4,12 +4,6 @@ const bcrpyt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const Task = require('./task')
 
-mongoose.connect( process.env.MONGO_URL, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false
-});
-
 
 const userSchema = mongoose.Schema({
     name: {
