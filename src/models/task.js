@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 const User = require('./user')
 
+mongoose.connect( process.env.MONGO_URL, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false
+});
 
 const taskSchema = mongoose.Schema({
     description: {
