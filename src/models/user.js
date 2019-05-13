@@ -4,7 +4,7 @@ const bcrpyt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const Task = require('./task')
 
-mongoose.connect('mongodb://127.0.0.1:27017/task-manager-db', {
+mongoose.connect( process.env.MONGO_URL, {
     useNewUrlParser: true,
     useCreateIndex: true,
     useFindAndModify: false
@@ -94,7 +94,7 @@ userSchema.methods.generateAuthToken = async function () {
     //create a container used to access the user
     const user = this
 
-    const token = jwt.sign({ _id: user._id.toString() }, 'OliverTwesst', { expiresIn: '1 week'})
+    const token = jwt.sign({ _id: user._id.toString() }, process.env.SECRET , { expiresIn: '1 week'})
     //save the generated token by concatenation
     user.tokens = user.tokens.concat({ token })
     await user.save()

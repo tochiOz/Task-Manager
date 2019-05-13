@@ -7,7 +7,7 @@ const auth = async (req, res, next) => {
        //firstly is to get the token given by the user
        const token = req.header('Authorization').replace('Bearer ', '')
        //decoding the token to get id and secret value
-       const decoded = jwt.verify( token, 'OliverTwesst')
+       const decoded = jwt.verify( token, process.env.SECRET )
        //compare if the decoded value exist in the database and get user
        const user = await User.findOne({ _id: decoded._id, 'tokens.token': token })
 
