@@ -148,7 +148,7 @@ const upload = multer({
     //fileFilter helps to filter unaccpted file
     fileFilter(req, file, cb) {
         //to check for pdf
-            // if ( !file.originalname.endsWith('.doc ') ) {
+            // if ( !file.originalname.endsWith('.doc ') ) 
             //     return cb(new Error('Please upload a Pdf'))   
             // }
 

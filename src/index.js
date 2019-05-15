@@ -1,15 +1,7 @@
-const express = require('express');
+const app = require('./app')
 const chalk = require('chalk');
-const userRouter = require('./routes/user');
-const taskRouter = require('./routes/task');
-const app = express();
-
 const port = process.env.PORT
-
-app.use(express.json());
-app.use('/', userRouter)
-app.use('/', taskRouter)
 
 app.listen(port, () => {
     console.log(chalk.italic.cyan('App running on server ' + port))
-});
+})
